@@ -1,3 +1,1 @@
-#nothing
-
 print("hello world")
