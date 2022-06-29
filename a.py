@@ -1,1 +1,3 @@
 #nothing
+
+print("hello world")
