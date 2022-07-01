@@ -3,14 +3,25 @@
 from params import registers
 from params import opcode
 
+flag = 1
+
+# flag to check that the variables have been declared at the beginning of the program . The flag becomes zero when any other command is called.
+
 def isValidCmd(line: str):
     cmd = line.split()[0]
     if cmd in opcode.keys():
-	    return True
+        flag = 0
+        return True
+    if cmd == "var":
+        return True
     return False
 
 def varNameValidity(varName: str):
-    pass
+    if varName.isdigit():
+        return False
+    if flag == 0:
+        return False
+    return True
 
 def regValidity(reg: str):
     if reg in registers.keys():
