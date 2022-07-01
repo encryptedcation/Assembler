@@ -1,26 +1,28 @@
+# CAUTION: need to adjust the code for mov instruction
+
 from params import registers
 from params import opcode
 
-def isValidCmd(line):
+def isValidCmd(line: str):
     cmd = line.split()[0]
     if cmd in opcode.keys():
 	    return True
     return False
 
-def varNameValidity(varName):
+def varNameValidity(varName: str):
     pass
 
-def regValidity(reg):
+def regValidity(reg: str):
     if reg in registers.keys():
 	    return True
     return False
 
-def immediateValidity(imm):
+def immediateValidity(imm: str):
     if imm.isdigit() and (int(imm) in range(0,256)):
 	    return True
     return False
 
-def lenChecker(line):
+def lenChecker(line: str):
     line = line.split()
     if isValidCmd(line):
         cmd = line[0]
@@ -38,10 +40,10 @@ def lenChecker(line):
     	    return True
         return False
 
-def isValidMemAddr(memAddr):
+def isValidMemAddr(memAddr: str):
     pass
 
-def isLineValid(line):
+def isLineValid(line: str):
     if lenChecker(line):
         line = line.split()
         cmd = line[0]
@@ -60,4 +62,4 @@ def isLineValid(line):
         if opcode[cmd][1] == 'F':
             if len(line) == 1:
                 return True
-        return False
+    return False
