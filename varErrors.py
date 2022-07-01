@@ -29,8 +29,11 @@ def regValidity(reg: str):
     return False
 
 def immediateValidity(imm: str):
-    if imm.isdigit() and (int(imm) in range(0,256)):
-	    return True
+    imm = list(imm)
+    if imm[0] == '$':
+        imm = ''.join(imm[1:])
+        if imm.isdigit() and (int(imm) in range(0,256)):
+            return True
     return False
 
 def lenChecker(line: str):
@@ -52,7 +55,16 @@ def lenChecker(line: str):
         return False
 
 def isValidMemAddr(memAddr: str):
-    pass
+	cmd = line.split()[0]
+	jumpCommands = ['jmp', 'jlt', 'jgt', 'je']
+	loadStore = ['ld', 'st']
+	if cmd in jumpCommands:
+        # memaddr should be a label
+		pass
+	if cmd in loadStore:
+		if varNameValidity(line[2]):
+			return True
+	return False 
 
 def isLineValid(line: str):
     if lenChecker(line):
