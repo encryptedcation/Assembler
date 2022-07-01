@@ -1,26 +1,63 @@
-# print("hello world")
-
-# var errors
-
-# opcodeDict = {add:("10000")}
-# import params
+from params import registers
 from params import opcode
 
-def isValidVar(line):
-    reg2 = 32
+def isValidCmd(line):
     cmd = line.split()[0]
-    if cmd == "mov":
-        pass
-        
     if cmd in opcode.keys():
-        val = opcode[cmd][2]
-        
-        pass
-        
-    else:
-        print("Invalid Command")
-        return 69
-        
-isValidVar("mov")
-for key, value in opcode.items():
-    print(value[1])
+	    return True
+    return False
+
+def varNameValidity(varName):
+    pass
+
+def regValidity(reg):
+    if reg in registers.keys():
+	    return True
+    return False
+
+def immediateValidity(imm):
+    if imm.isdigit() and (int(imm) in range(0,256)):
+	    return True
+    return False
+
+def lenChecker(line):
+    line = line.split()
+    if isValidCmd(line):
+        cmd = line[0]
+        if opcode[cmd][1] == 'A' and len(line) == 4:
+	        return True
+        if opcode[cmd][1] == 'B' and len(line) == 3:
+    	    return True
+        if opcode[cmd][1] == 'C' and len(line) == 3:
+    	    return True
+        if opcode[cmd][1] == 'D' and len(line) == 3:
+    	    return True
+        if opcode[cmd][1] == 'E' and len(line) == 2:
+    	    return True
+        if opcode[cmd][1] == 'F' and len(line) == 1:
+    	    return True
+        return False
+
+def isValidMemAddr(memAddr):
+    pass
+
+def isLineValid(line):
+    if lenChecker(line):
+        line = line.split()
+        cmd = line[0]
+        if opcode[cmd][1] == 'A':
+            if (regValidity(line[1]) and regValidity(line[2]) and regValidity(line[3])):
+                return True
+        if opcode[cmd][1] == 'B':
+            if (regValidity(line[1]) and immediateValidity(imm)):
+                return True
+        if opcode[cmd][1] == 'C':
+            if (regValidity(line[1]) and regValidity(line[2])):
+                return True
+        if opcode[cmd][1] == 'D' or opcode[cmd][1] == 'E':
+            if (regValidity(line[1]) and isValidMemAddr(line[2])):
+                return True
+        if opcode[cmd][1] == 'F':
+            if len(line) == 1:
+                return True
+        return False
