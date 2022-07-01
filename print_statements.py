@@ -4,11 +4,12 @@ instrn_count = 0  # counts number of instructions without variable declarations
 var_lst = []   # stores variables
 # lst has the contents of current instruction
 # assuming input taken as string and split based on space into list
+# are flags needed in this file?
 
-# if (lst[0] != 'var'):
+# if (lst[0] != 'var' and lst[0]!='\n'):
 #     instrn_count += 1
 # else:
-#     var_lst.append(lst[1])
+#     var_lst.append(lst[-1])
 
 # assuming 1st instruction is at memory address 1
 #############################################
@@ -111,6 +112,22 @@ def printbin(lst):
             pass # handle no variable declared error here?
 
     # E
+    elif (code == 'jmp'):
+        val = opcode[code][0] + '00000000000'
+
+    elif (code == 'jlt'):
+        val = opcode[code][0] + '00000000000'
+
+    elif (code == 'jgt'):
+        val = opcode[code][0] + '00000000000'
+
+    elif (code == 'je'):
+        val = opcode[code][0] + '00000000000'
+
+    
+
+
+
 
 
         
