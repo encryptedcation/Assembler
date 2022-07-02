@@ -54,7 +54,7 @@ def lenChecker(line: str):
     	    return True
         return False
 
-def isValidMemAddr(memAddr: str):
+def isValidMemAddr(line: str):
 	cmd = line.split()[0]
 	jumpCommands = ['jmp', 'jlt', 'jgt', 'je']
 	loadStore = ['ld', 'st']
@@ -74,7 +74,7 @@ def isLineValid(line: str):
             if (regValidity(line[1]) and regValidity(line[2]) and regValidity(line[3])):
                 return True
         if opcode[cmd][1] == 'B':
-            if (regValidity(line[1]) and immediateValidity(imm)):
+            if (regValidity(line[1]) and immediateValidity(line[2])):
                 return True
         if opcode[cmd][1] == 'C':
             if (regValidity(line[1]) and regValidity(line[2])):
