@@ -37,8 +37,8 @@ def immediateValidity(imm: str):
     return False
 
 def lenChecker(line: str):
-    line = line.split()
     if isValidCmd(line):
+        line = line.split()
         cmd = line[0]
         if opcode[cmd][1] == 'A' and len(line) == 4:
 	        return True
