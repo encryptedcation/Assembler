@@ -1,5 +1,4 @@
-from params import registers
-from params import opcode
+from params import *
 
 flag = 1
 
@@ -113,7 +112,7 @@ def isLineValid(line: str):
 # reg = 'R9'
 # reg1 = 'R4'
 # varName = 'valala'
-# varNAme2 = '1232'
+# varName2 = '1232'
 
 # print(isValidCmd(line))
 # print(isLineValid(line))
@@ -121,4 +120,6 @@ def isLineValid(line: str):
 # print(lenChecker(line))
 # print(immediateValidity(imm))
 # print(regValidity(reg))
+# print(regValidity(reg1))
 # print(varNameValidity(varName))
+# print(varNameValidity(varName2))
