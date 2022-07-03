@@ -14,7 +14,20 @@ def isValidCmd(line: str):
         return True
     return False
 
+def duplicateVar(varName: str):
+    pass
+
+def duplicateLabel(labelName: str):
+    pass
+
+def labelValidity(labelName: str):
+    if duplicateLabel(labelName):
+        return False
+    # add other conditions here
+
 def varNameValidity(varName: str):
+    if duplicateVar(varName):
+        return False
     if varName.isdigit():
         return False
     if flag == 0:
@@ -57,16 +70,16 @@ def lenChecker(line: str):
         return False
 
 def isValidMemAddr(line: str):
-	cmd = line.split()[0]
-	jumpCommands = ['jmp', 'jlt', 'jgt', 'je']
-	loadStore = ['ld', 'st']
-	if cmd in jumpCommands:
-        # memaddr should be a label
-		pass
-	if cmd in loadStore:
-		if varNameValidity(line[2]):
-			return True
-	return False 
+    cmd = line.split()[0]
+    jumpCommands = ['jmp', 'jlt', 'jgt', 'je']
+    loadStore = ['ld', 'st']
+    if cmd in jumpCommands:
+        if labelValidity(line[2]):
+            return True
+    if cmd in loadStore:
+        if varNameValidity(line[2]):
+            return True
+    return False 
 
 def isLineValid(line: str):
     if lenChecker(line):
