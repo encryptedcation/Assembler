@@ -1,5 +1,3 @@
-# CAUTION: need to adjust the code for mov instruction
-
 from params import registers
 from params import opcode
 
@@ -25,7 +23,7 @@ def varNameValidity(varName: str):
 
 def regValidity(reg: str):
     if reg in registers.keys():
-	    return True
+        return True
     return False
 
 def immediateValidity(imm: str):
@@ -40,18 +38,22 @@ def lenChecker(line: str):
     if isValidCmd(line):
         line = line.split()
         cmd = line[0]
-        if opcode[cmd][1] == 'A' and len(line) == 4:
-	        return True
-        if opcode[cmd][1] == 'B' and len(line) == 3:
-    	    return True
-        if opcode[cmd][1] == 'C' and len(line) == 3:
-    	    return True
-        if opcode[cmd][1] == 'D' and len(line) == 3:
-    	    return True
-        if opcode[cmd][1] == 'E' and len(line) == 2:
-    	    return True
-        if opcode[cmd][1] == 'F' and len(line) == 1:
-    	    return True
+        if cmd == 'mov' and immediateValidity(line[2]):
+            return True
+        elif cmd == 'mov' and regValidity(line[2]):
+            return True           
+        elif opcode[cmd][1] == 'A' and len(line) == 4:
+            return True
+        elif opcode[cmd][1] == 'B' and len(line) == 3:
+            return True
+        elif opcode[cmd][1] == 'C' and len(line) == 3:
+            return True
+        elif opcode[cmd][1] == 'D' and len(line) == 3:
+            return True
+        elif opcode[cmd][1] == 'E' and len(line) == 2:
+            return True
+        elif opcode[cmd][1] == 'F' and len(line) == 1:
+            return True
         return False
 
 def isValidMemAddr(line: str):
@@ -70,6 +72,10 @@ def isLineValid(line: str):
     if lenChecker(line):
         line = line.split()
         cmd = line[0]
+        if cmd == 'mov' and immediateValidity(line[2]) and regValidity(line[1]):
+            return True
+        if cmd == 'mov' and regValidity(line[1]) and regValidity(line[2]):
+            return True
         if opcode[cmd][1] == 'A':
             if (regValidity(line[1]) and regValidity(line[2]) and regValidity(line[3])):
                 return True
@@ -86,3 +92,20 @@ def isLineValid(line: str):
             if len(line) == 1:
                 return True
     return False
+
+# sample input to test the above functions
+
+# line = "mov R0 R2"
+# imm = '$32'
+# reg = 'R9'
+# reg1 = 'R4'
+# varName = 'valala'
+# varNAme2 = '1232'
+
+# print(isValidCmd(line))
+# print(isLineValid(line))
+# print(isValidMemAddr(line))
+# print(lenChecker(line))
+# print(immediateValidity(imm))
+# print(regValidity(reg))
+# print(varNameValidity(varName))
