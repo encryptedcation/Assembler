@@ -30,15 +30,15 @@ from print_statements import *
 # mehul writing here
 
 """Checks for list of lines:
-1. Variables declared at the very starting
-2. Redeclaration of variables not allowed
-No use of undefined variables
-No use of undefined labels
-No illegal use of FLAGS register
-
-Only one hlt at end
-No lines after hlt
-
+a. Typos in instruction name or register name DONE
+b. Use of undefined variables
+c. Use of undefined labels
+d. Illegal use of FLAGS register
+e. Illegal Immediate values (more than 8 bits)
+f. Misuse of labels as variables or vice-versa
+g. Variables not declared at the beginning DONE
+h. Missing hlt instruction DONE
+i. hlt not being used as the last instruction DONE
 """
 
 lineCount = 0  # Counting number of lines entered till now
@@ -65,3 +65,36 @@ while True:
             exit()
     except EOFError:
         break
+
+# hlt checks --------
+if "hlt" in lines:
+    if lines[-1] != "hlt":
+        print("Error: hlt not being used as the last instruction")
+        exit()
+else:
+    print("Error: Missing hlt instruction")
+    exit()
+# --------
+
+# var checks --------
+for lineCount in range(len(lines)):
+    line = lines[lineCount]
+    if "var" in line:
+        if flagVarOver:
+            print(
+                "Error: Variables found after the beginning at line "
+                + str(lineCount)
+                + ": "
+                + line
+            )
+            exit()
+        else:
+            var = line.split()[1]
+            if var in variables:
+                print(f"Error: Duplicate variable on line {lineCount}: {line}")
+                exit()
+            variables.append(var)
+    else:
+        flagVarOver = 1
+        continue
+# --------
