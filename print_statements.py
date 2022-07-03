@@ -1,17 +1,19 @@
 from params import *
 
-instrn_count = 0  # counts number of instructions without variable declarations
+instrn_count = -1  # counts number of instructions without variable declarations
 var_lst = []   # stores variables
-# lst has the contents of current instruction
+labels={}  # key is the label, value is memory location
+# lst has the contents of current instruction (make lst global?)
 # assuming input taken as string and split based on space into list
 # are flags needed in this file?
 
 # if (lst[0] != 'var' and lst[0]!='\n'):
 #     instrn_count += 1
+    
 # else:
 #     var_lst.append(lst[-1])
 
-# assuming 1st instruction is at memory address 1
+# assuming 1st instruction is at memory address 0
 #############################################
 
 
@@ -28,7 +30,6 @@ def make_8_bit(num):  # have to check for overflow?
         bin = '0'*(8-len(bin)) + bin
     return bin
     
-# not handling variables
 
 def printbin(lst):
     code = lst[0]
@@ -111,19 +112,29 @@ def printbin(lst):
         else:
             pass # handle no variable declared error here?
 
-    # E
+    # E  
     elif (code == 'jmp'):
-        val = opcode[code][0] + '00000000000'
+        mem_addr = labels[lst[1]]
+        bin_mem_addr = make_8_bit(mem_addr)
+        val = opcode[code][0] + '000' + bin_mem_addr
 
     elif (code == 'jlt'):
-        val = opcode[code][0] + '00000000000'
+        mem_addr = labels[lst[1]]
+        bin_mem_addr = make_8_bit(mem_addr)
+        val = opcode[code][0] + '000' + bin_mem_addr
 
     elif (code == 'jgt'):
-        val = opcode[code][0] + '00000000000'
+        mem_addr = labels[lst[1]]
+        bin_mem_addr = make_8_bit(mem_addr)
+        val = opcode[code][0] + '000' + bin_mem_addr
 
     elif (code == 'je'):
-        val = opcode[code][0] + '00000000000'
+        mem_addr = labels[lst[1]]
+        bin_mem_addr = make_8_bit(mem_addr)
+        val = opcode[code][0] + '000' + bin_mem_addr
+        
 
+# print(make_8_bit(25))
     
 
 
@@ -134,9 +145,7 @@ def printbin(lst):
 
 
 
-# vals = ['hi', '&123']
-# a = int(vals[1][1:])
-# print(a)
+
 
 
 
