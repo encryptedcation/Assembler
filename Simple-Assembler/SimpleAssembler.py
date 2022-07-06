@@ -229,9 +229,11 @@ def labelValidity(labelName: str):
     if duplicateLabel(labelName):
         print("Reused label name: " + labelName)
         return False
-    if duplicateVar(labelName):
+    elif duplicateVar(labelName):
         print("Misuse: Label name is same as variable name: " + labelName)
         return False
+    else:
+        return True
 
 
 def varNameValidity(varName: str):
@@ -307,7 +309,7 @@ def isValidMemAddr(line: str):
             print("Label not found: " + line.split()[1])
             exit()
     elif cmd in loadStore:
-        if line.split()[1] in variables:
+        if line.split()[2] in variables:
             return True
         else:
             print("Variable not found: " + line.split()[2])
@@ -376,25 +378,57 @@ h. Missing hlt instruction DONE
 i. hlt not being used as the last instruction DONE
 """
 
-
+flagVarOver = 0
 while True:
     try:
         if lineCount <= 256:
             cmd = input()
-            if cmd.split()[0] == "var" and len(cmd.split()) == 2:
-                lines.append(cmd)
-                lineCount += 1
-            elif ":" in cmd and isValidCmd(cmd.split(":")[1]):
-                cmd = cmd.split(":")[1]
+            if cmd.split()[0] == "var":
+                if len(cmd.split()) == 2:
+                    if flagVarOver:
+                        print(
+                            "Error: Variables found after the beginning at line "
+                            + str(lineCount + 1)
+                            + ": "
+                            + cmd
+                        )
+                        exit()
+                    else:
+                        var = cmd.split()[1]
+                        if duplicateVar(var):
+                            print(
+                                f"Error: Duplicate variable on line {lineCount+1}: {cmd}"
+                            )
+                            exit()
+                        else:
+                            if varNameValidity(var):
+                                variables.append(var)
+                                lineCount += 1
+                                continue
+                            else:
+                                exit()
+                else:
+                    print(
+                        "General Syntax Error on line "
+                        + str(lineCount + 1)
+                        + ": "
+                        + cmd
+                    )
+                    exit()
+            else:
+                flagVarOver = 1
+            if ":" in cmd and isValidCmd(cmd.split(":")[1]):
+                cmd1 = cmd.split(":")[1].strip()
                 if labelValidity(cmd.split(":")[0]):
-                    if isLineValid(cmd):
-                        lines.append(cmd)
+                    if isLineValid(cmd1):
+                        labels[cmd.split(":")[0]] = lineCount - len(variables)
+                        lines.append(cmd1)
                         lineCount += 1
                     else:
                         print(f"General Syntax Error on line {lineCount+1}: {cmd}")
                         exit()
                 else:
-                    print("Invalid label", cmd.split(":")[0])
+                    print("Invalid label on line:", lineCount, cmd.split(":")[0])
                     exit()
             elif isValidCmd(cmd):
                 if isLineValid(cmd):
@@ -422,35 +456,6 @@ if "hlt" in lines:
 else:
     print("Error: Missing hlt instruction")
     exit()
-# --------
-flagVarOver = 0
-# var  checks --------
-for lineCount in range(len(lines)):
-    line = lines[lineCount]
-    if "var" in line:
-        if flagVarOver:
-            print(
-                "Error: Variables found after the beginning at line "
-                + str(lineCount)
-                + ": "
-                + line
-            )
-            exit()
-        else:
-            var = line.split()[1]
-            if duplicateVar(var):
-                print(f"Error: Duplicate variable on line {lineCount+1}: {line}")
-                exit()
-            else:
-                if varNameValidity(var):
-                    variables.append(var)
-                else:
-                    exit()
-    else:
-        flagVarOver = 1
-        continue
-# --------
-
 
 for key in labels.keys():
     labels[key] = make_8_bit(labels[key] - len(variables))
