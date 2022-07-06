@@ -227,6 +227,7 @@ def duplicateLabel(labelName: str):
 
 def labelValidity(labelName: str):
     if duplicateLabel(labelName):
+        print("Reused label name: " + labelName)
         return False
     if duplicateVar(labelName):
         print("Misuse: Label name is same as variable name: " + labelName)
@@ -235,6 +236,7 @@ def labelValidity(labelName: str):
 
 def varNameValidity(varName: str):
     if duplicateVar(varName):
+        print("Reused variable name: " + varName)
         return False
     if duplicateLabel(varName):
         print("Misuse: Variable name is same as label name: " + varName)
@@ -262,7 +264,7 @@ def immediateValidity(imm: str):
             return True
         else:
             print("Imm more than 8 bits: " + imm)
-            return False
+            exit()
     return False
 
 
@@ -299,15 +301,18 @@ def isValidMemAddr(line: str):
     jumpCommands = ["jmp", "jlt", "jgt", "je"]
     loadStore = ["ld", "st"]
     if cmd in jumpCommands:
-        if line[2] in labels.keys():
+        if line.split()[1] in labels.keys():
             return True
         else:
-            print("Label not found: " + line[2])
-    if cmd in loadStore:
-        if line[2] in variables:
+            print("Label not found: " + line.split()[1])
+            exit()
+    elif cmd in loadStore:
+        if line.split()[1] in variables:
             return True
         else:
-            print("Variable not found: " + line[2])
+            print("Variable not found: " + line.split()[2])
+            exit()
+
     return False
 
 
@@ -325,11 +330,14 @@ def isLineValid(line: str):
                     return True
                 else:
                     return False
+            elif line[1] == "FLAGS":
+                print("Illegal use of FLAGS register. Command: " + " ".join(line))
+                exit()
             else:
                 return False
         if "FLAGS" in line:
-            print("Illegal use of FLAGS register. Command: " + line.join())
-            return False
+            print("Illegal use of FLAGS register. Command: " + " ".join(line))
+            exit()
         if opcode[cmd][1] == "A":
             if regValidity(line[1]) and regValidity(line[2]) and regValidity(line[3]):
                 return True
@@ -339,8 +347,11 @@ def isLineValid(line: str):
         elif opcode[cmd][1] == "C":
             if regValidity(line[1]) and regValidity(line[2]):
                 return True
-        elif opcode[cmd][1] == "D" or opcode[cmd][1] == "E":
-            if regValidity(line[1]) and isValidMemAddr(line[2]):
+        elif opcode[cmd][1] == "D":
+            if regValidity(line[1]) and isValidMemAddr(" ".join(line)):
+                return True
+        elif opcode[cmd][1] == "E":
+            if isValidMemAddr(" ".join(line)):
                 return True
         elif opcode[cmd][1] == "F":
             if len(line) == 1:
@@ -349,16 +360,9 @@ def isLineValid(line: str):
             return True
         else:
             return False
+    else:
+        return False
 
-
-# List of functions in print_statements.py
-
-"""
-1. make_8_bit(num)
-2. printbin(lst)
-"""
-
-# mehul writing here
 
 """Checks for list of lines:
 a. Typos in instruction name or register name DONE
@@ -382,18 +386,27 @@ while True:
                 lineCount += 1
             elif ":" in cmd and isValidCmd(cmd.split(":")[1]):
                 cmd = cmd.split(":")[1]
-                if isLineValid(cmd):
-                    lines.append(cmd)
-                    lineCount += 1
+                if labelValidity(cmd.split(":")[0]):
+                    if isLineValid(cmd):
+                        lines.append(cmd)
+                        lineCount += 1
+                    else:
+                        print(f"General Syntax Error on line {lineCount+1}: {cmd}")
+                        exit()
+                else:
+                    print("Invalid label", cmd.split(":")[0])
+                    exit()
             elif isValidCmd(cmd):
                 if isLineValid(cmd):
                     lines.append(cmd)
                     lineCount += 1
                 else:
-                    print(f"General Syntax Error on line {lineCount}: {cmd}")
+                    print(f"General Syntax Error on line {lineCount+1}: {cmd}")
                     exit()
             else:
-                print("Error: Invalid Command on line " + str(lineCount) + ": " + cmd)
+                print(
+                    "Error: Invalid Command on line " + str(lineCount + 1) + ": " + cmd
+                )
                 exit()
         else:
             print("Error: Too many lines")
@@ -411,18 +424,9 @@ else:
     exit()
 # --------
 flagVarOver = 0
-# var and label checks --------
+# var  checks --------
 for lineCount in range(len(lines)):
     line = lines[lineCount]
-    if ":" in line:
-        label = line.split(":")[0]
-        cmd = line.split(":")[1]
-        if label in labels.keys():
-            print(f"Error: Label {label} is already declared")
-            exit()
-        else:
-            labels[label] = lineCount
-            lines[lineCount] = cmd
     if "var" in line:
         if flagVarOver:
             print(
@@ -435,10 +439,13 @@ for lineCount in range(len(lines)):
         else:
             var = line.split()[1]
             if duplicateVar(var):
-                print(f"Error: Duplicate variable on line {lineCount}: {line}")
+                print(f"Error: Duplicate variable on line {lineCount+1}: {line}")
                 exit()
             else:
-                variables.append(var)
+                if varNameValidity(var):
+                    variables.append(var)
+                else:
+                    exit()
     else:
         flagVarOver = 1
         continue
