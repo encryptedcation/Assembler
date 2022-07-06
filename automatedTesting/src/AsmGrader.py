@@ -64,7 +64,7 @@ class AsmGrader(Grader):
             expectedBin = os.popen(
                 "cat " + "../automatedTesting/tests/bin/" + expDir + "/" + test
             ).readlines()
-            print(generatedBin)
+            # print(generatedBin)
             if self.diff(generatedBin, expectedBin):
                 self.printSev(
                     self.HIGH, bcolors.OKGREEN + "[PASSED]" + bcolors.ENDC + " " + test
