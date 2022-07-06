@@ -377,7 +377,15 @@ while True:
     try:
         if lineCount <= 256:
             cmd = input()
-            if isValidCmd(cmd) or (":" in cmd and isValidCmd(cmd.split(":")[1])):
+            if cmd.split()[0] == "var" and len(cmd.split()) == 2:
+                lines.append(cmd)
+                lineCount += 1
+            elif ":" in cmd and isValidCmd(cmd.split(":")[1]):
+                cmd = cmd.split(":")[1]
+                if isLineValid(cmd):
+                    lines.append(cmd)
+                    lineCount += 1
+            elif isValidCmd(cmd):
                 if isLineValid(cmd):
                     lines.append(cmd)
                     lineCount += 1
@@ -402,7 +410,7 @@ else:
     print("Error: Missing hlt instruction")
     exit()
 # --------
-
+flagVarOver = 0
 # var and label checks --------
 for lineCount in range(len(lines)):
     line = lines[lineCount]
@@ -426,7 +434,7 @@ for lineCount in range(len(lines)):
             exit()
         else:
             var = line.split()[1]
-            if duplicateVar(var, variables):
+            if duplicateVar(var):
                 print(f"Error: Duplicate variable on line {lineCount}: {line}")
                 exit()
             else:
