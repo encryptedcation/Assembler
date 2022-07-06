@@ -417,13 +417,17 @@ while True:
                     exit()
             else:
                 flagVarOver = 1
-            if ":" in cmd and isValidCmd(cmd.split(":")[1]):
+            if ":" in cmd:
                 cmd1 = cmd.split(":")[1].strip()
                 if labelValidity(cmd.split(":")[0]):
-                    if isLineValid(cmd1):
-                        labels[cmd.split(":")[0]] = lineCount - len(variables)
-                        lines.append(cmd1)
-                        lineCount += 1
+                    if isValidCmd(cmd1):
+                        if isLineValid(cmd1):
+                            labels[cmd.split(":")[0]] = lineCount - len(variables)
+                            lines.append(cmd1)
+                            lineCount += 1
+                        else:
+                            print(f"General Syntax Error on line {lineCount+1}: {cmd}")
+                            exit()
                     else:
                         print(f"General Syntax Error on line {lineCount+1}: {cmd}")
                         exit()
@@ -460,5 +464,5 @@ else:
 for key in labels.keys():
     labels[key] = make_8_bit(labels[key] - len(variables))
 
-for line in lines[len(variables) :]:
+for line in lines:
     printbin(line.split())
