@@ -1,22 +1,20 @@
 from params import *
 
-flag = 1
-
-# flag to check that the variables have been declared at the beginning of the program . The flag becomes zero when any other command is called.
-
 
 def isValidCmd(line: str):
     cmd = line.split()[0]
     if cmd in opcode.keys():
-        flag = 0
         return True
     if cmd == "var":
         return True
     return False
 
 
-def duplicateVar(varName: str):
-    pass
+def duplicateVar(varName: str, variables: list):
+    if varName in variables:
+        return True
+    else:
+        return False
 
 
 def duplicateLabel(labelName: str):
@@ -34,8 +32,6 @@ def varNameValidity(varName: str):
         return False
     if varName.isdigit():
         return False
-    if flag == 0:
-        return False
     return True
 
 
@@ -51,6 +47,9 @@ def immediateValidity(imm: str):
         imm = "".join(imm[1:])
         if imm.isdigit() and (int(imm) in range(0, 256)):
             return True
+        else:
+            print("Imm more than 8 bits: " + imm)
+            return False
     return False
 
 
@@ -85,7 +84,7 @@ def isValidMemAddr(line: str):
         if labelValidity(line[2]):
             return True
     if cmd in loadStore:
-        if varNameValidity(line[2]):
+        if line[2] in variables:
             return True
     return False
 
@@ -94,26 +93,38 @@ def isLineValid(line: str):
     if lenChecker(line):
         line = line.split()
         cmd = line[0]
-        if cmd == "mov" and immediateValidity(line[2]) and regValidity(line[1]):
-            return True
-        if cmd == "mov" and regValidity(line[1]) and regValidity(line[2]):
-            return True
+        if cmd == "mov":
+            if regValidity(line[1]):
+                if immediateValidity(line[2]):
+                    return True
+                elif regValidity(line[2]):
+                    return True
+                elif line[2] == "FLAGS":
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        if "FLAGS" in line:
+            print("Illegal use of FLAGS register. Command: " + line.join())
+            return False
         if opcode[cmd][1] == "A":
             if regValidity(line[1]) and regValidity(line[2]) and regValidity(line[3]):
                 return True
-        if opcode[cmd][1] == "B":
+        elif opcode[cmd][1] == "B":
             if regValidity(line[1]) and immediateValidity(line[2]):
                 return True
-        if opcode[cmd][1] == "C":
+        elif opcode[cmd][1] == "C":
             if regValidity(line[1]) and regValidity(line[2]):
                 return True
-        if opcode[cmd][1] == "D" or opcode[cmd][1] == "E":
+        elif opcode[cmd][1] == "D" or opcode[cmd][1] == "E":
             if regValidity(line[1]) and isValidMemAddr(line[2]):
                 return True
-        if opcode[cmd][1] == "F":
+        elif opcode[cmd][1] == "F":
             if len(line) == 1:
                 return True
-    return False
+        else:
+            return False
 
 
 # sample input to test the above functions
