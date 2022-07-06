@@ -1,4 +1,5 @@
 from params import *
+from SimpleAssembler import variables, labels
 
 
 def isValidCmd(line: str):
