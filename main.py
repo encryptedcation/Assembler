@@ -1,11 +1,204 @@
-from errors import *
-from params import *
-from print_statements import *
+opcode = {
+    "add": ("10000", "A"),
+    "sub": ("10001", "A"),
+    "mov": [("10010", "B"), ("10011", "C")],
+    "ld": ("10100", "D"),
+    "st": ("10101", "D"),
+    "mul": ("10110", "A"),
+    "div": ("10111", "C"),
+    "rs": ("11000", "B"),
+    "ls": ("11001", "B"),
+    "xor": ("11010", "A"),
+    "or": ("11011", "A"),
+    "and": ("11100", "A"),
+    "not": ("11101", "C"),
+    "cmp": ("11110", "C"),
+    "jmp": ("11111", "E"),
+    "jlt": ("01100", "E"),
+    "jgt": ("01101", "E"),
+    "je": ("01111", "E"),
+    "hlt": ("01010", "F"),
+}
+
+registers = {
+    "R0": "000",
+    "R1": "001",
+    "R2": "010",
+    "R3": "011",
+    "R4": "100",
+    "R5": "101",
+    "R6": "110",
+}
+
+registersF = {
+    "R0": "000",
+    "R1": "001",
+    "R2": "010",
+    "R3": "011",
+    "R4": "100",
+    "R5": "101",
+    "R6": "110",
+    "FLAGS": "111",
+}
+
 
 lineCount = 0  # Counting number of lines entered till now
 lines = []
 variables = []
 labels = {}
+instrn_count = 0
+
+
+def make_8_bit(num):
+    con_num = []
+    while num >= 1:
+        rem = num % 2
+        con_num.append(str(int(rem)))
+        num = num // 2
+    con_num = con_num[::-1]
+    bin = "".join(con_num)
+    if len(bin) < 8:
+        bin = "0" * (8 - len(bin)) + bin
+    return bin
+
+
+def printbin(lst):
+    code = lst[0]
+    val = ""
+    # A
+    if code == "add":
+        val = (
+            opcode[code][0]
+            + "00"
+            + registersF[lst[1]]
+            + registersF[lst[2]]
+            + registersF[lst[3]]
+        )
+
+    elif code == "sub":
+        val = (
+            opcode[code][0]
+            + "00"
+            + registersF[lst[1]]
+            + registersF[lst[2]]
+            + registersF[lst[3]]
+        )
+
+    elif code == "mul":
+        val = (
+            opcode[code][0]
+            + "00"
+            + registersF[lst[1]]
+            + registersF[lst[2]]
+            + registersF[lst[3]]
+        )
+
+    elif code == "xor":
+        val = (
+            opcode[code][0]
+            + "00"
+            + registersF[lst[1]]
+            + registersF[lst[2]]
+            + registersF[lst[3]]
+        )
+
+    elif code == "or":
+        val = (
+            opcode[code][0]
+            + "00"
+            + registersF[lst[1]]
+            + registersF[lst[2]]
+            + registersF[lst[3]]
+        )
+
+    elif code == "and":
+        val = (
+            opcode[code][0]
+            + "00"
+            + registersF[lst[1]]
+            + registersF[lst[2]]
+            + registersF[lst[3]]
+        )
+
+    # B,C
+
+    elif code == "mov":
+        if lst[-1][0] == "$":
+            needed_num = int(lst[-1][1:])
+            final_bin = make_8_bit(needed_num)
+            val = opcode[code][0][0] + registersF[lst[1]] + final_bin
+
+        else:
+            val = opcode[code][1][0] + "00000" + registersF[lst[1]] + registersF[lst[2]]
+
+    elif code == "div":
+        val = opcode[code][0] + "00000" + registersF[lst[1]] + registersF[lst[2]]
+
+    elif code == "not":
+        val = opcode[code][0] + "00000" + registersF[lst[1]] + registersF[lst[2]]
+
+    elif code == "cmp":
+        val = opcode[code][0] + "00000" + registersF[lst[1]] + registersF[lst[2]]
+
+    elif code == "ls":
+        needed_num = int(lst[-1][1:])
+        final_bin = make_8_bit(needed_num)
+        val = opcode[code][0][0] + registersF[lst[1]] + final_bin
+
+    elif code == "rs":
+        needed_num = int(lst[-1][1:])
+        final_bin = make_8_bit(needed_num)
+        val = opcode[code][0][0] + registersF[lst[1]] + final_bin
+
+    # F
+    elif code == "hlt":
+        val = opcode[code][0] + "00000000000"
+
+    # D
+    elif code == "ld":
+        if lst[-1] in variables:
+            for i in range(len(variables)):
+                if variables[i] == lst[-1]:
+                    ind = i
+                    break
+            mem_addr = instrn_count + (ind + 1)
+            bin_mem_addr = make_8_bit(mem_addr)
+            val = opcode[code][0] + registersF[lst[1]] + bin_mem_addr
+        else:
+            pass  # handle no variable declared error here?
+
+    elif code == "st":
+        if lst[-1] in variables:
+            for i in range(len(variables)):
+                if variables[i] == lst[-1]:
+                    ind = i
+                    break
+            mem_addr = instrn_count + (ind + 1)
+            bin_mem_addr = make_8_bit(mem_addr)
+            val = opcode[code][0] + registersF[lst[1]] + bin_mem_addr
+        else:
+            pass  # handle no variable declared error here?
+
+    # E
+    elif code == "jmp":
+        bin_mem_addr = labels[lst[1]]
+
+        val = opcode[code][0] + "000" + bin_mem_addr
+
+    elif code == "jlt":
+        bin_mem_addr = labels[lst[1]]
+
+        val = opcode[code][0] + "000" + bin_mem_addr
+
+    elif code == "jgt":
+        bin_mem_addr = labels[lst[1]]
+
+        val = opcode[code][0] + "000" + bin_mem_addr
+
+    elif code == "je":
+        bin_mem_addr = labels[lst[1]]
+
+        val = opcode[code][0] + "000" + bin_mem_addr
 
 
 def isValidCmd(line: str):
@@ -104,11 +297,15 @@ def isValidMemAddr(line: str):
     jumpCommands = ["jmp", "jlt", "jgt", "je"]
     loadStore = ["ld", "st"]
     if cmd in jumpCommands:
-        if labelValidity(line[2]):
+        if line[2] in labels.keys():
             return True
+        else:
+            print("Label not found: " + line[2])
     if cmd in loadStore:
         if line[2] in variables:
             return True
+        else:
+            print("Variable not found: " + line[2])
     return False
 
 
@@ -204,16 +401,18 @@ else:
     exit()
 # --------
 
-# var checks --------
+# var and label checks --------
 for lineCount in range(len(lines)):
     line = lines[lineCount]
     if ":" in line:
         label = line.split(":")[0]
+        cmd = line.split(":")[1]
         if label in labels.keys():
             print(f"Error: Label {label} is already declared")
             exit()
         else:
             labels[label] = lineCount
+            lines[lineCount] = cmd
     if "var" in line:
         if flagVarOver:
             print(
@@ -234,3 +433,10 @@ for lineCount in range(len(lines)):
         flagVarOver = 1
         continue
 # --------
+
+
+for key in labels.keys():
+    labels[key] = make_8_bit(labels[key] - len(variables))
+
+for line in lines[len(variables) :]:
+    printbin(line.split())
