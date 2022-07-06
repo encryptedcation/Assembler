@@ -149,22 +149,22 @@ def printbin(lst):
 
     # E
     elif code == "jmp":
-        mem_addr = labels[lst[1]]
+        bin_mem_addr = labels[lst[1]]
 
         val = opcode[code][0] + "000" + bin_mem_addr
 
     elif code == "jlt":
-        mem_addr = labels[lst[1]]
+        bin_mem_addr = labels[lst[1]]
 
         val = opcode[code][0] + "000" + bin_mem_addr
 
     elif code == "jgt":
-        mem_addr = labels[lst[1]]
+        bin_mem_addr = labels[lst[1]]
 
         val = opcode[code][0] + "000" + bin_mem_addr
 
     elif code == "je":
-        mem_addr = labels[lst[1]]
+        bin_mem_addr = labels[lst[1]]
 
         val = opcode[code][0] + "000" + bin_mem_addr
 
