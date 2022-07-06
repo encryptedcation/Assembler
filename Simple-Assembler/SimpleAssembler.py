@@ -200,6 +200,8 @@ def printbin(lst):
 
         val = opcode[code][0] + "000" + bin_mem_addr
 
+    print(val)
+
 
 def isValidCmd(line: str):
     cmd = line.split()[0]
@@ -373,9 +375,9 @@ i. hlt not being used as the last instruction DONE
 
 while True:
     try:
-        if lineCount < 256:
+        if lineCount <= 256:
             cmd = input()
-            if isValidCmd(cmd) or cmd[-1] == ":" or cmd[-1] == " ":
+            if isValidCmd(cmd) or (":" in cmd and isValidCmd(cmd.split(":")[1])):
                 if isLineValid(cmd):
                     lines.append(cmd)
                     lineCount += 1
