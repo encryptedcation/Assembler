@@ -168,5 +168,4 @@ def printbin(lst):
 
         val = opcode[code][0] + "000" + bin_mem_addr
 
-
-# print(make_8_bit(25))
+    print(val)
