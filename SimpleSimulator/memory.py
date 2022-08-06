@@ -24,6 +24,22 @@ memFile = memHandler()
 memFile.load(sys.stdin)
 
 
+def floatToDec(binNum: str):
+    exp = binNum[:3]
+    mantissa = binNum[3:]
+    exp = bin(binaryToInteger(exp))[2:]
+    mantissa = "1" + "".join(mantissa)
+    dec = binaryToInteger(mantissa[: -(len(exp))])
+    exp = list(exp)
+    exp = [int(i) for i in exp]
+    res = 0
+    idx = 1
+    for i in exp:
+        res += (i * 2) ** (-idx)
+        idx += 1
+    return dec + res
+
+
 def resetFlag():
     R["111"] = 0
 
@@ -184,6 +200,36 @@ def jgt(line):
         resetFlag()
         dump()
         PC += 1
+
+
+def addf(r1, r2, r3):
+    # add floating point r2 and r3 and store in r1
+    R[r1] = floatToDec(R[r2]) + floatToDec(R[r3])
+    if R[r1] > 252.0:
+        R[r1] = 252.0
+        R["111"] = 8
+        dump()
+    else:
+        resetFlag()
+        dump()
+
+
+def subf(r1, r2, r3):
+    # subtract floating point r2 and r3 and store in r1
+    R[r1] = floatToDec(R[r2]) - floatToDec(R[r3])
+    if R[r1] < 0:
+        R[r1] = 0
+        R["111"] = 8
+        dump()
+    else:
+        resetFlag()
+        dump()
+
+
+def movf(r1, imm):
+    R[r1] = floatToDec(imm)
+    resetFlag()
+    dump()
 
 
 def je(line):

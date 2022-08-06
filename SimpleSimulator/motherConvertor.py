@@ -15,3 +15,18 @@ def integerToBinary(intVal, bitSize):
     else:
         binStr = binStr[(len(binStr) - bitSize) :]
     return binStr
+
+
+def floatValidity(imm: str):
+    imm = list(imm)
+    if imm[0] == "$":
+        try:
+            imm = float("".join(imm[1:]))
+            if (
+                type(imm) == float
+            ):  # ADD and imm in range(), the range of mantissa and exponent
+                return True
+        except ValueError:
+            print("Invalid immediate.")
+            return False
+    return False
