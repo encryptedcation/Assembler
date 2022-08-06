@@ -4,7 +4,6 @@ PC = 0
 Cycle = -1
 x_coord = []
 y_coord = []
-commandList = []
 temp = []
 
 R = {
@@ -164,9 +163,8 @@ def isValidImm(imm):
 
 
 def load(r1, mem):
-    if (mem not in memAddr.keys()){
+    if mem not in memAddr.keys():
         memAddr[mem] = 0
-    }
     R[r1] = memAddr[mem]
     resetFlag()
 
@@ -184,20 +182,22 @@ def jgt(line):
     if R["111"] == 2:
         PC = line
     else:
-        PC+=1
+        PC += 1
+
 
 def je(line):
     if R["111"] == 1:
         PC = line
     else:
-        PC+=1
+        PC += 1
 
 
 def jlt(line):
     if R["111"] == 4:
         PC = line
     else:
-        PC+=1
+        PC += 1
+
 
 lines = []
 while True:
@@ -310,15 +310,6 @@ while hltFlag != 1:
 
     elif opcodeType == "F":
         hltFlag = 1
-        break
-
-
-while True:
-    try:
-        s = input()
-        commandList.append(s)
-
-    except EOFError:
         break
 
 
