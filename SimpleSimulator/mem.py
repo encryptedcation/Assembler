@@ -14,10 +14,10 @@ class memHandler:
         return self.mem[progCount]
 
     def getValueAtAdd(self, memAdd):
-        return binaryToInteger(self.mem[memAdd])
+        return binaryToInteger(self.mem[binaryToInteger(memAdd)])
 
     def loadValueAtAdd(self, memAdd, val):
-        self.mem[memAdd] = integerToBinary(val, 16)
+        self.mem[binaryToInteger(memAdd)] = integerToBinary(val, 16)
 
     def dump(self):
         for memAdd in self.mem:

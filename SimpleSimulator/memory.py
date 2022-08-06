@@ -47,7 +47,7 @@ def movReg(reg1, reg2):
 def add(reg1, reg2, reg3):
     R[reg1] = R[reg2] + R[reg3]
     if R[reg1] > 65535:
-        R[reg1] = 65535  # make all bits 1 in reg1
+        R[reg1] = R[reg1] % 65535  # make all bits 1 in reg1
         R["111"] = 8  # setting overflow flag
         dump()
     else:
@@ -75,7 +75,7 @@ def OR(reg1, reg2, reg3):
 def mul(r1, r2, r3):
     R[r1] = R[r2] * R[r3]
     if R[r1] > 65535:
-        R[r1] = 65535
+        R[r1] = R[r1] % 65535
         R["111"] = 8  # Raise OVERFLOW flag
         dump()
     else:
@@ -108,7 +108,7 @@ def rShift(r1, imm):
 def lShift(r1, imm):
     R[r1] = R[r1] << imm
     if R[r1] > 65535:
-        R[r1] = 65535
+        R[r1] = R[r1] % 65535
         R["111"] = 8
         dump()
     else:
@@ -119,7 +119,7 @@ def lShift(r1, imm):
 def xor(r1, r2, r3):
     R[r1] = R[r2] ^ R[r3]
     if R[r1] > 65535:
-        R[r1] = 65535
+        R[r1] = R[r1] % 65535
         R["111"] = 8  # Raise OVERFLOW flag
         dump()
     else:
@@ -130,7 +130,7 @@ def xor(r1, r2, r3):
 def AND(r1, r2, r3):
     R[r1] = R[r2] & R[r3]
     if R[r1] > 65535:
-        R[r1] = 65535
+        R[r1] = R[r1] % 65535
         R["111"] = 8  # Raise OVERFLOW flag
         dump()
     else:
@@ -156,46 +156,52 @@ def compare(r1, r2):
 
 
 def load(r1, mem):
-    R[r1] = memFile.getValueAtAdd(int(mem))
+    R[r1] = memFile.getValueAtAdd(mem)
     resetFlag()
     dump()
+    global PC
     PC += 1
 
 
 def store(r1, mem):
-    memFile.loadValueAtAdd(int(mem), R[r1])
+    memFile.loadValueAtAdd(mem, R[r1])
     resetFlag()
     dump()
+    global PC
     PC += 1
 
 
 def jmp(mem):
     dump()
-    PC = mem
+    global PC
+    PC = binaryToInteger(mem)
 
 
 def jgt(line):
+    global PC
     if R["111"] == 2:
         dump()
-        PC = line
+        PC = binaryToInteger(line)
     else:
         dump()
         PC += 1
 
 
 def je(line):
+    global PC
     if R["111"] == 1:
         dump()
-        PC = line
+        PC = binaryToInteger(line)
     else:
         dump()
         PC += 1
 
 
 def jlt(line):
+    global PC
     if R["111"] == 4:
         dump()
-        PC = line
+        PC = binaryToInteger(line)
     else:
         dump()
         PC += 1
