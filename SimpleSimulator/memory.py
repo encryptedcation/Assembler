@@ -17,6 +17,30 @@ R = {
     "111": 0,
 }
 
+
+opcode = {
+    "10000": "A",
+    "10001": "A",
+    "10010": "B", 
+    "10011": "C",
+    "10100": "D",
+    "10101": "D",
+    "10110": "A",
+    "10111": "C",
+    "11000": "B",
+    "11001": "B",
+    "11010": "A",
+    "11011": "A",
+    "11100": "A",
+    "11101": "C",
+    "11110": "C",
+    "11111": "E",
+    "01100": "E",
+    "01101": "E",
+    "01111": "E",
+    "01010": "F"
+}
+
 # overflowFlag = 0
 
 # R is a dictionary which stores the current value in the register as key and register code as value
@@ -39,6 +63,8 @@ def resetFlag():
 def memDump():
     pass
 
+def findOpcodeType(op_bin): # takes the opcode in binary
+    return opcode[op_bin]
 
 def movImm(reg1, imm):  # assuming immediate is already a decimal here
     R[reg1] = imm
@@ -141,26 +167,8 @@ def compare(r1, r2):
     else:
         R["111"] = 4
 
-
 def mem(writeAddr):
     pass
-
-
-def findOpcodeType(opcode):
-    pass
-
-
-def isValidReg(regs):
-    pass
-
-
-def isValidMemAddr(memAddr):
-    pass
-
-
-def isValidImm(imm):
-    pass
-
 
 def load(r1, mem):
     if mem not in memAddr.keys():
