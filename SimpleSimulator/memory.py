@@ -168,6 +168,7 @@ def store(r1, mem):
 
 
 def jmp(mem):
+    resetFlag()
     dump()
     global PC
     PC = binaryToInteger(mem)
@@ -176,9 +177,11 @@ def jmp(mem):
 def jgt(line):
     global PC
     if R["111"] == 2:
+        resetFlag()
         dump()
         PC = binaryToInteger(line)
     else:
+        resetFlag()
         dump()
         PC += 1
 
@@ -186,9 +189,11 @@ def jgt(line):
 def je(line):
     global PC
     if R["111"] == 1:
+        resetFlag()
         dump()
         PC = binaryToInteger(line)
     else:
+        resetFlag()
         dump()
         PC += 1
 
@@ -196,9 +201,11 @@ def je(line):
 def jlt(line):
     global PC
     if R["111"] == 4:
+        resetFlag()
         dump()
         PC = binaryToInteger(line)
     else:
+        resetFlag()
         dump()
         PC += 1
 
