@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+import sys
 
 PC = 0
 Cycle = -1
@@ -8,6 +9,7 @@ temp = []
 
 from motherConvertor import binaryToInteger, integerToBinary
 from regs import R, opc
+from mem import memHandler
 
 # overflowFlag = 0
 
@@ -19,17 +21,12 @@ hltFlag = 0
 
 PC = 0
 
-
-def initializeMem():
-    pass
+memFile = memHandler()
+memFile.load(sys.stdin)
 
 
 def resetFlag():
     R["111"] = 0
-
-
-def memDump():
-    pass
 
 
 def findOpcodeType(op_bin):  # takes the opcode in binary
@@ -138,10 +135,6 @@ def compare(r1, r2):
         R["111"] = 4
 
 
-def mem(writeAddr):
-    pass
-
-
 def load(r1, mem):
     if mem not in memAddr.keys():
         memAddr[mem] = 0
@@ -180,15 +173,9 @@ def jlt(line):
 
 
 lines = []
-while True:
-    try:
-        line = input()
-        lines.append(line)
-    except EOFError:
-        break
 
 while hltFlag != 1:
-    line = lines[PC]
+    line = memFile.getInst(PC)
     opcode = line[0:5]
     opcodeType = findOpcodeType(opcode)
 
@@ -291,6 +278,8 @@ while hltFlag != 1:
     elif opcodeType == "F":
         hltFlag = 1
         break
+
+memFile.dump()
 
 
 def plot():
