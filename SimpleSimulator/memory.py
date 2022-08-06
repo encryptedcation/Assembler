@@ -21,7 +21,7 @@ R = {
 opc = {
     "10000": "A",
     "10001": "A",
-    "10010": "B", 
+    "10010": "B",
     "10011": "C",
     "10100": "D",
     "10101": "D",
@@ -38,7 +38,7 @@ opc = {
     "01100": "E",
     "01101": "E",
     "01111": "E",
-    "01010": "F"
+    "01010": "F",
 }
 
 # overflowFlag = 0
@@ -57,14 +57,16 @@ def initializeMem():
 
 
 def resetFlag():
-    pass
+    R["111"] = 0
 
 
 def memDump():
     pass
 
-def findOpcodeType(op_bin): # takes the opcode in binary
+
+def findOpcodeType(op_bin):  # takes the opcode in binary
     return opc[op_bin]
+
 
 def movImm(reg1, imm):  # assuming immediate is already a decimal here
     R[reg1] = imm
@@ -167,8 +169,10 @@ def compare(r1, r2):
     else:
         R["111"] = 4
 
+
 def mem(writeAddr):
     pass
+
 
 def load(r1, mem):
     if mem not in memAddr.keys():
@@ -255,7 +259,7 @@ while hltFlag != 1:
 
     elif opcodeType == "B":
         reg1 = line[5:8]
-        imm = line[8:]
+        imm = binaryToInteger(line[8:])  # make function to convert binary to integer
 
         if opcode == "10010":
             PC += 1
