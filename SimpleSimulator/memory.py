@@ -20,8 +20,6 @@ from mem import memHandler
 
 hltFlag = 0
 
-PC = 0
-
 memFile = memHandler()
 memFile.load(sys.stdin)
 
@@ -37,11 +35,13 @@ def findOpcodeType(op_bin):  # takes the opcode in binary
 def movImm(reg1, imm):  # assuming immediate is already a decimal here
     R[reg1] = imm
     resetFlag()
+    dump()
 
 
 def movReg(reg1, reg2):
     R[reg2] = R[reg1]
     resetFlag()
+    dump()
 
 
 def add(reg1, reg2, reg3):
@@ -49,8 +49,10 @@ def add(reg1, reg2, reg3):
     if R[reg1] > 65535:
         R[reg1] = 65535  # make all bits 1 in reg1
         R["111"] = 8  # setting overflow flag
+        dump()
     else:
         resetFlag()
+        dump()
 
 
 def sub(reg1, reg2, reg3):
@@ -58,13 +60,16 @@ def sub(reg1, reg2, reg3):
     if R[reg1] < 0:
         R[reg1] = 0  # case of underflow
         R["111"] = 8  # setting overflow flag
+        dump()
     else:
         resetFlag()
+        dump()
 
 
 def OR(reg1, reg2, reg3):
     R[reg1] = R[reg2] | R[reg3]
     resetFlag()
+    dump()
 
 
 def mul(r1, r2, r3):
@@ -72,8 +77,10 @@ def mul(r1, r2, r3):
     if R[r1] > 65535:
         R[r1] = 65535
         R["111"] = 8  # Raise OVERFLOW flag
+        dump()
     else:
         resetFlag()
+        dump()
 
 
 def divide(r1, r2, r3):
@@ -81,8 +88,10 @@ def divide(r1, r2, r3):
     if R[r1] < 0:
         R[r1] = 0  # case of underflow
         R["111"] = 8  # Raise OVERFLOW flag
+        dump()
     else:
         resetFlag()
+        dump()
 
 
 def rShift(r1, imm):
@@ -90,8 +99,10 @@ def rShift(r1, imm):
     if R[r1] < 0:
         R[r1] = 0  # case of underflow
         R["111"] = 8  # Raise OVERFLOW flag
+        dump()
     else:
         resetFlag()
+        dump()
 
 
 def lShift(r1, imm):
@@ -99,8 +110,10 @@ def lShift(r1, imm):
     if R[r1] > 65535:
         R[r1] = 65535
         R["111"] = 8
+        dump()
     else:
         resetFlag()
+        dump()
 
 
 def xor(r1, r2, r3):
@@ -108,8 +121,10 @@ def xor(r1, r2, r3):
     if R[r1] > 65535:
         R[r1] = 65535
         R["111"] = 8  # Raise OVERFLOW flag
+        dump()
     else:
         resetFlag()
+        dump()
 
 
 def AND(r1, r2, r3):
@@ -117,13 +132,16 @@ def AND(r1, r2, r3):
     if R[r1] > 65535:
         R[r1] = 65535
         R["111"] = 8  # Raise OVERFLOW flag
+        dump()
     else:
         resetFlag()
+        dump()
 
 
 def invert(reg1, reg2):
     R[reg1] = 65535 ^ R[reg2]
     resetFlag()
+    dump()
 
 
 def compare(r1, r2):
@@ -134,43 +152,60 @@ def compare(r1, r2):
         R["111"] = 2
     else:
         R["111"] = 4
+    dump()
 
 
 def load(r1, mem):
-    R[r1] = memFile.getValueAtAdd(mem)
-    PC += 1
+    R[r1] = memFile.getValueAtAdd(int(mem))
     resetFlag()
+    dump()
+    PC += 1
 
 
 def store(r1, mem):
-    memFile.loadValueAtAdd(mem, R[r1])
-    PC += 1
+    memFile.loadValueAtAdd(int(mem), R[r1])
     resetFlag()
+    dump()
+    PC += 1
 
 
 def jmp(mem):
+    dump()
     PC = mem
 
 
 def jgt(line):
     if R["111"] == 2:
+        dump()
         PC = line
     else:
+        dump()
         PC += 1
 
 
 def je(line):
     if R["111"] == 1:
+        dump()
         PC = line
     else:
+        dump()
         PC += 1
 
 
 def jlt(line):
     if R["111"] == 4:
+        dump()
         PC = line
     else:
+        dump()
         PC += 1
+
+
+def dump():
+    print(integerToBinary(int(PC), 8), end=" ")
+    for reg in R:
+        print(integerToBinary(int(R[reg]), 16), end=" ")
+    print()
 
 
 lines = []
@@ -189,80 +224,80 @@ while hltFlag != 1:
         reg3 = line[13:]
 
         if opcode == "10000":
-            PC += 1
             add(reg1, reg2, reg3)
+            PC += 1
 
         elif opcode == "10001":
-            PC += 1
             sub(reg1, reg2, reg3)
+            PC += 1
 
         elif opcode == "10110":
-            PC += 1
             mul(reg1, reg2, reg3)
+            PC += 1
 
         elif opcode == "11010":
-            PC += 1
             xor(reg1, reg2, reg3)
+            PC += 1
 
         elif opcode == "11011":
-            PC += 1
             OR(reg1, reg2, reg3)
+            PC += 1
 
         elif opcode == "11100":
-            PC += 1
             AND(reg1, reg2, reg3)
+            PC += 1
 
         elif opcode == "10001":
-            PC += 1
             sub(reg1, reg2, reg3)
+            PC += 1
 
     elif opcodeType == "B":
         reg1 = line[5:8]
         imm = binaryToInteger(line[8:])  # make function to convert binary to integer
 
         if opcode == "10010":
-            PC += 1
             movImm(reg1, imm)
+            PC += 1
 
         elif opcode == "11001":
-            PC += 1
             lShift(reg1, imm)
+            PC += 1
 
         elif opcode == "11000":
-            PC += 1
             rShift(reg1, imm)
+            PC += 1
 
     elif opcodeType == "C":
         reg1 = line[10:13]
         reg2 = line[13:]
 
         if opcode == "10011":
-            PC += 1
             movReg(reg1, reg2)
+            PC += 1
 
         elif opcode == "10111":
-            PC += 1
             divide(reg1, reg2)
+            PC += 1
 
         elif opcode == "11101":
-            PC += 1
             invert(reg1, reg2)
+            PC += 1
 
         elif opcode == "11110":
-            PC += 1
             compare(reg1, reg2)
+            PC += 1
 
     elif opcodeType == "D":
         reg1 = line[5:8]
         memAddr = line[8:]
 
         if opcode == "10100":
-            PC += 1
             load(reg1, memAddr)
+            PC += 1
 
         elif opcode == "10101":
-            PC += 1
             store(reg1, memAddr)
+            PC += 1
 
     elif opcodeType == "E":
         memAddr = line[8:]
@@ -281,12 +316,8 @@ while hltFlag != 1:
 
     elif opcodeType == "F":
         hltFlag = 1
+        dump()
         break
-
-    print(integerToBinary(int(PC), 8), end=" ")
-    for reg in R:
-        print(integerToBinary(int(R[reg]), 16), end=" ")
-    print()
 
 
 memFile.dump()

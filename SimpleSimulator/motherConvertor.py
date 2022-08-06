@@ -14,4 +14,4 @@ def integerToBinary(intVal, bitSize):
         binStr = "0" * (bitSize - len(binStr)) + binStr
     else:
         binStr = binStr[(len(binStr) - bitSize) :]
-    return
+    return binStr
