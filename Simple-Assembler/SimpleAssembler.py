@@ -119,7 +119,7 @@ def printbin(lst):
         if lst[-1] in variables:
             for i in range(len(variables)):
                 if variables[i] == lst[-1]:
-                    ind = i
+                    ind = i + len(commands) - 1
                     break
             mem_addr = instrn_count + (ind + 1)
             bin_mem_addr = make_8_bit(mem_addr)
@@ -131,7 +131,7 @@ def printbin(lst):
         if lst[-1] in variables:
             for i in range(len(variables)):
                 if variables[i] == lst[-1]:
-                    ind = i
+                    ind = i + len(commands) - 1
                     break
             mem_addr = instrn_count + (ind + 1)
             bin_mem_addr = make_8_bit(mem_addr)
@@ -375,7 +375,9 @@ for i in range(len(lines)):
         else:
             print("General Syntax Error: " + cmd)
             exit()
-    elif cmd.split()[0][-1] == ":":
+    else:
+        flagVarOver = 1
+    if cmd.split()[0][-1] == ":":
         if not labelValidity(cmd.split()[0][:-1]):
             print(f"Error: Illegal label name: {cmd.split()[0][:-1]}")
             exit()
