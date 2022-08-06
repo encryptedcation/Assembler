@@ -95,7 +95,7 @@ num = math.ceil(mem_bits) % 10  # number part
 num_part = 2**(num)
 val = gets_key((2**(mem_bits-num))*8)  # dictionary has value stored in bits
 print(f'{num_part} {val}')
-
+   
 
 
 
