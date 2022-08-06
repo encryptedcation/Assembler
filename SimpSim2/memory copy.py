@@ -44,11 +44,13 @@ def memDump():
 def movImm(reg1, imm):  # assuming immediate is already a decimal here
     R[reg1] = imm
     resetFlag()
+    memDump()
 
 
 def movReg(reg1, reg2):
     R[reg1] = R[reg2]
     resetFlag()
+    memDump()
 
 
 def add(reg1, reg2, reg3):
@@ -58,6 +60,7 @@ def add(reg1, reg2, reg3):
         R["111"] = 8  # setting overflow flag
     else:
         resetFlag()
+    memDump()
 
 
 def sub(reg1, reg2, reg3):
@@ -67,80 +70,64 @@ def sub(reg1, reg2, reg3):
         R["111"] = 8  # setting overflow flag
     else:
         resetFlag()
+    memDump()
 
 
 def OR(reg1, reg2, reg3):
     R[reg1] = R[reg2] | R[reg3]
     resetFlag()
+    memDump()
 
 
-def mul(r1, r2, r3):
+def mul(line):
+    r1 = line[7:10]
+    r2 = line[10:13]
+    r3 = line[13:16]
     R[r1] = R[r2] * R[r3]
     if R[r1] > 65535:
-        R[r1] = 65535
-        R["111"] = 8  # Raise OVERFLOW flag
-    else:
-        resetFlag()
+    R[reg1] = 65535  # make all bits 1 in reg1
+    R["111"] = 8  # setting overflow flag
+    return R[r1]
 
 
-def divide(r1, r2, r3):
-    R[r1] = int(R[r2] / R[r3])
-    if R[r1] < 0:
-        R[r1] = 0  # case of underflow
-        R["111"] = 8  # Raise OVERFLOW flag
-    else:
-        resetFlag()
+def divide(line):
+    r1 = line[7:10]
+    r2 = line[10:13]
+    r3 = line[13:16]
+    R[r1] = R[r2] / R[r3]
+    return R[r1]
 
 
-def rShift(r1, imm):
-    R[r1] = R[r1] >> imm
-    if R[r1] < 0:
-        R[r1] = 0  # case of underflow
-        R["111"] = 8  # Raise OVERFLOW flag
-    else:
-        resetFlag()
+def rShift(line):
+    r1 = line[7:10]
+    r2 = line[10:18]
+    R[r1] = R[r2] / R[r3]
+    return R[r1]
 
 
-def lShift(r1, imm):
-    R[r1] = R[r1] << imm
-    if R[r1] > 65535:
-        R[r1] = 65535
-        R["111"] = 8
-    else:
-        resetFlag()
+def lShift(line):
+    r1 = line[7:10]
+    r2 = line[10:18]
 
 
-def xor(r1, r2, r3):
-    R[r1] = R[r2] ^ R[r3]
-    if R[r1] > 65535:
-        R[r1] = 65535
-        R["111"] = 8  # Raise OVERFLOW flag
-    else:
-        resetFlag()
+def xor(line):
+    r1 = line[7:10]
+    r2 = line[10:13]
+    r3 = line[13:16]
 
 
-def AND(r1, r2, r3):
-    R[r1] = R[r2] & R[r3]
-    if R[r1] > 65535:
-        R[r1] = 65535
-        R["111"] = 8  # Raise OVERFLOW flag
-    else:
-        resetFlag()
+def AND(line):
+    r1 = line[7:10]
+    r2 = line[10:13]
+    r3 = line[13:16]
 
 
-def invert(reg1, reg2):
-    R[reg1] = 65535 ^ R[reg2]
-    resetFlag()
+def invert(line):
+    pass
 
 
-def compare(r1, r2):
-    resetFlag()
-    if R[r1] == R[r2]:
-        R["111"] = 1
-    elif R[r1] > R[r2]:
-        R["111"] = 2
-    else:
-        R["111"] = 4
+def compare(line):
+    pass
 
 
 def mem(writeAddr):
@@ -163,41 +150,29 @@ def isValidImm(imm):
     pass
 
 
-def load(r1, mem):
-    if (mem not in memAddr.keys()){
-        memAddr[mem] = 0
-    }
-    R[r1] = memAddr[mem]
-    resetFlag()
+def load(line):
+    pass
 
 
-def store(r1, mem):
-    memAddr[mem] = R[r1]
-    resetFlag()
+def store(line):
+    pass
 
 
-def jmp(mem):
-    PC = mem
+def jmp(line):
+    pass
 
 
 def jgt(line):
-    if R["111"] == 2:
-        PC = line
-    else:
-        PC+=1
+    pass
+
 
 def je(line):
-    if R["111"] == 1:
-        PC = line
-    else:
-        PC+=1
+    pass
 
 
 def jlt(line):
-    if R["111"] == 4:
-        PC = line
-    else:
-        PC+=1
+    pass
+
 
 lines = []
 while True:
@@ -210,8 +185,7 @@ while True:
 while hltFlag != 1:
     line = lines[PC]
     opcode = line[0:5]
-    opcodeType = findOpcodeType(opcode)
-
+    opcodeType = findOpcodeType(opcode) #yet to be programmed
     if opcodeType == "A":
         reg1 = line[7:10]
         reg2 = line[10:13]
@@ -297,15 +271,19 @@ while hltFlag != 1:
         memAddr = line[8:]
 
         if opcode == "11111":
+            PC = "idk"
             jmp(memAddr)
 
         elif opcode == "01100":
+            PC = "idk"
             jlt(memAddr)
 
         elif opcode == "01101":
+            PC = "idk"
             jgt(memAddr)
 
         elif opcode == "01111":
+            PC = "idk"
             je(memAddr)
 
     elif opcodeType == "F":
