@@ -180,18 +180,18 @@ def duplicateVar(varName: str):
 
 
 def duplicateLabel(labelName: str):
-    if labelName in labels:
-        return True
-    return False
+    for label in labels.keys():
+        if label == labelName:
+            return True
 
 
 def labelValidity(labelName: str):
     if duplicateLabel(labelName):
         print("Reused label name: " + labelName)
-        return False
+        exit()
     elif duplicateVar(labelName):
         print("Misuse: Label name is same as variable name: " + labelName)
-        return False
+        exit()
     else:
         return True
 
@@ -339,93 +339,90 @@ i. hlt not being used as the last instruction DONE
 """
 
 flagVarOver = 0
+
+lines = []
 while True:
     try:
-        if lineCount <= 256:
-            cmd = input()
-            if cmd.split()[0] == "var":
-                if len(cmd.split()) == 2:
-                    if flagVarOver:
-                        print(
-                            "Error: Variables found after the beginning at line "
-                            + str(lineCount + 1)
-                            + ": "
-                            + cmd
-                        )
-                        exit()
-                    else:
-                        var = cmd.split()[1]
-                        if duplicateVar(var):
-                            print(
-                                f"Error: Duplicate variable on line {lineCount+1}: {cmd}"
-                            )
-                            exit()
-                        else:
-                            if varNameValidity(var):
-                                variables.append(var)
-                                lineCount += 1
-                                continue
-                            else:
-                                exit()
-                else:
-                    print(
-                        "General Syntax Error on line "
-                        + str(lineCount + 1)
-                        + ": "
-                        + cmd
-                    )
-                    exit()
-            else:
-                flagVarOver = 1
-            if ":" in cmd:
-                cmd1 = cmd.split(":")[1].strip()
-                if labelValidity(cmd.split(":")[0]):
-                    if isValidCmd(cmd1):
-                        if isLineValid(cmd1):
-                            labels[cmd.split(":")[0]] = lineCount - len(variables)
-                            lines.append(cmd1)
-                            lineCount += 1
-                        else:
-                            print(f"General Syntax Error on line {lineCount+1}: {cmd}")
-                            exit()
-                    else:
-                        print(f"General Syntax Error on line {lineCount+1}: {cmd}")
-                        exit()
-                else:
-                    print("Invalid label on line:", lineCount, cmd.split(":")[0])
-                    exit()
-            elif isValidCmd(cmd):
-                if isLineValid(cmd):
-                    lines.append(cmd)
-                    lineCount += 1
-                else:
-                    print(f"General Syntax Error on line {lineCount+1}: {cmd}")
-                    exit()
-            else:
-                print(
-                    "Error: Invalid Command on line " + str(lineCount + 1) + ": " + cmd
-                )
-                exit()
-        else:
-            print("Error: Too many lines")
-            exit()
+        cmd = input()
+        if len(cmd.split()) == 0:
+            continue
+        lines.append(cmd)
     except EOFError:
         break
 
+if len(lines) > 256:
+    print("Lines exceed 256")
+    exit()
+
+for i in range(len(lines)):
+    cmd = lines[i]
+    if cmd.split()[0] == "var":
+        if len(cmd.split()) == 2:
+            if flagVarOver:
+                print("Error: Variables found after the beginning")
+                exit()
+            else:
+                var = cmd.split()[1]
+                if duplicateVar(var):
+                    print(f"Error: Duplicate variable name: {var}")
+                    exit()
+                else:
+                    if varNameValidity(var):
+                        variables.append(var)
+                        continue
+                    else:
+                        exit()
+        else:
+            print("General Syntax Error: " + cmd)
+            exit()
+    elif cmd.split()[0][-1] == ":":
+        if not labelValidity(cmd.split()[0][:-1]):
+            print(f"Error: Illegal label name: {cmd.split()[0][:-1]}")
+            exit()
+        else:
+            labels[cmd.split()[0][:-1]] = i - len(variables)
+            continue
+
+commands = []
+
+for cmd in lines[len(variables) :]:
+    if ":" in cmd:
+        cmd1 = cmd.split(":")[1].strip()
+        if isValidCmd(cmd1):
+            if isLineValid(cmd1):
+                commands.append(cmd1)
+            else:
+                print(f"General Syntax Error on line {lineCount+1}: {cmd}")
+                exit()
+        else:
+            print(f"General Syntax Error on line {lineCount+1}: {cmd}")
+            exit()
+    elif isValidCmd(cmd):
+        if isLineValid(cmd):
+            commands.append(cmd)
+        else:
+            print(f"General Syntax Error on line {lineCount+1}: {cmd}")
+            exit()
+    else:
+        print("Error: Invalid Command on line " + str(lineCount + 1) + ": " + cmd)
+        exit()
+
 # hlt checks --------
 hltCount = 0
-for line in lines:
-    if line == "hlt":
+for c in commands:
+    if c == "hlt":
         hltCount += 1
-if hltCount == 0:
-    # print("Error: No hlt instruction found")
-    exit()
+
 if hltCount > 1:
     print("Error: More than one hlt instruction found")
     exit()
+elif hltCount == 0:
+    print("Error: No hlt instruction found")
+    exit()
+else:
+    for key in labels.keys():
+        labels[key] = make_8_bit(labels[key])
 
-for key in labels.keys():
-    labels[key] = make_8_bit(labels[key] - len(variables))
-
-for line in lines:
-    printbin(line.split())
+    for cc in commands:
+        printbin(cc.split())
+    exit()
