@@ -1,49 +1,6 @@
-opcode = {
-    "add": ("10000", "A"),
-    "sub": ("10001", "A"),
-    "mov": [("10010", "B"), ("10011", "C")],
-    "ld": ("10100", "D"),
-    "st": ("10101", "D"),
-    "mul": ("10110", "A"),
-    "div": ("10111", "C"),
-    "rs": ("11000", "B"),
-    "ls": ("11001", "B"),
-    "xor": ("11010", "A"),
-    "or": ("11011", "A"),
-    "and": ("11100", "A"),
-    "not": ("11101", "C"),
-    "cmp": ("11110", "C"),
-    "jmp": ("11111", "E"),
-    "jlt": ("01100", "E"),
-    "jgt": ("01101", "E"),
-    "je": ("01111", "E"),
-    "hlt": ("01010", "F"),
-    "addf": ("00000", "A"),
-    "subf": ("00001", "A"),
-    "movf": ("00010", "B")
-}
+from params import *
 
-registers = {
-    "R0": "000",
-    "R1": "001",
-    "R2": "010",
-    "R3": "011",
-    "R4": "100",
-    "R5": "101",
-    "R6": "110",
-}
-
-registersF = {
-    "R0": "000",
-    "R1": "001",
-    "R2": "010",
-    "R3": "011",
-    "R4": "100",
-    "R5": "101",
-    "R6": "110",
-    "FLAGS": "111",
-}
-
+from errors import *
 
 lineCount = 0  # Counting number of lines entered till now
 lines = []
@@ -51,6 +8,36 @@ variables = []
 labels = {}
 instrn_count = 0
 
+import math
+
+def integerToBinary(intVal, bitSize):
+    """
+    Converts an integer into corresponding binary string with given bit length.
+    """
+    binStr = bin(intVal)[2:]
+    if bitSize > len(binStr):
+        binStr = "0" * (bitSize - len(binStr)) + binStr
+    else:
+        binStr = binStr[(len(binStr) - bitSize) :]
+    return
+
+def binaryToInteger(binStr):
+    """
+    Converts a binary string binStr to corresponding integerVal.
+    """
+    return int(binStr, 2)
+
+def floatValidity(imm: str):
+    imm = list(imm)
+    if imm[0] == "$":
+        try:
+            imm = float("".join(imm[1:]))
+            if type(imm) == float: # ADD and imm in range(), the range of mantissa and exponent
+                return True
+        except ValueError:
+            print("Invalid immediate.")
+            return False
+    return False
 
 def make_8_bit(num):
     con_num = []
@@ -64,12 +51,53 @@ def make_8_bit(num):
         bin = "0" * (8 - len(bin)) + bin
     return bin
 
-def eightBitFloat(floatNum):
-    # make sure to handle the error
-    pass
+def eightBitFloat(floatNum: str):
     
+    if floatValidity(floatNum):
+        floatNum = float("".join(floatNum[1:]))
+        if floatNum < 1:
+            print("Invalid float. Cannot be represented since it is <1.")
+            exit()
+        intPart = int(floatNum)
+        decPart = floatNum - intPart
+        binaryRepOfIntPart = bin(intPart)[2:]
+        mantissa = list(str(binaryRepOfIntPart))       
+        res = []
+
+        while len(mantissa) != 5:
+            decPart = decPart * 2
+
+            if decPart > 1:
+                res.append(str(1))
+                decPart = decPart - 1
+            elif decPart < 1:
+                res.append(str(0))
+            elif decPart == 1:
+                res.append(str(1))
+                break
+        mantissa = mantissa[1:] + res
+
+        if len(mantissa) > 5:
+            mantissa = mantissa[:5]
+        
+        exp = len(str(binaryRepOfIntPart))
+
+        if exp > 7:
+            print("Exponent > 7. Overflow.")
+            exit()
+        
+        exp = bin(exp - 1)[2:]
 
 
+
+        if len(str(exp)) < 3:
+            zeros = 3 - len(exp)
+        exp = "0"*zeros + exp
+
+        while len(mantissa) < 5:
+            mantissa.append("0")
+        mantissa = "".join(mantissa)
+        return exp + mantissa
 def printbin(lst):
     code = lst[0]
     val = ""
@@ -82,28 +110,8 @@ def printbin(lst):
             + registersF[lst[2]]
             + registersF[lst[3]]
         )
-    
-    elif code == "addf":
-        val = (
-            opcode[code][0]
-            + "00"
-            + registersF[lst[1]]
-            + registersF[lst[2]]
-            + registersF[lst[3]]
-        )
 
     elif code == "sub":
-        val = (
-            opcode[code][0]
-            + "00"
-            + registersF[lst[1]]
-            + registersF[lst[2]]
-            + registersF[lst[3]]
-        )
-
-    elif code == "subf":
-        
-
         val = (
             opcode[code][0]
             + "00"
@@ -147,7 +155,22 @@ def printbin(lst):
             + registersF[lst[2]]
             + registersF[lst[3]]
         )
-
+    elif code == "addf":
+        val = (
+            opcode[code][0]
+            + "00"
+            + registersF[lst[1]]
+            + registersF[lst[2]]
+            + registersF[lst[3]]
+        )
+    elif code == "subf":
+        val = (
+            opcode[code][0]
+            + "00"
+            + registersF[lst[1]]
+            + registersF[lst[2]]
+            + registersF[lst[3]]
+        )
     # B,C
 
     elif code == "mov":
@@ -158,13 +181,11 @@ def printbin(lst):
 
         else:
             val = opcode[code][1][0] + "00000" + registersF[lst[1]] + registersF[lst[2]]
-
     elif code == "movf":
         if lst[-1][0] == "$":
             needed_num = float(lst[-1][1:])
             final_bin = eightBitFloat(needed_num) 
             val = opcode[code][0][0] + registersF[lst[1]] + final_bin
-
     elif code == "div":
         val = opcode[code][0] + "00000" + registersF[lst[1]] + registersF[lst[2]]
 
@@ -193,7 +214,7 @@ def printbin(lst):
         if lst[-1] in variables:
             for i in range(len(variables)):
                 if variables[i] == lst[-1]:
-                    ind = i
+                    ind = i + len(commands) - 1
                     break
             mem_addr = instrn_count + (ind + 1)
             bin_mem_addr = make_8_bit(mem_addr)
@@ -205,7 +226,7 @@ def printbin(lst):
         if lst[-1] in variables:
             for i in range(len(variables)):
                 if variables[i] == lst[-1]:
-                    ind = i
+                    ind = i + len(commands) - 1
                     break
             mem_addr = instrn_count + (ind + 1)
             bin_mem_addr = make_8_bit(mem_addr)
@@ -254,18 +275,18 @@ def duplicateVar(varName: str):
 
 
 def duplicateLabel(labelName: str):
-    if labelName in labels:
-        return True
-    return False
+    for label in labels.keys():
+        if label == labelName:
+            return True
 
 
 def labelValidity(labelName: str):
     if duplicateLabel(labelName):
         print("Reused label name: " + labelName)
-        return False
+        exit()
     elif duplicateVar(labelName):
         print("Misuse: Label name is same as variable name: " + labelName)
-        return False
+        exit()
     else:
         return True
 
@@ -300,18 +321,7 @@ def immediateValidity(imm: str):
             return True
         else:
             print("Imm more than 8 bits: " + imm)
-    return False
-
-def floatValidity(imm: str):
-    imm = list(imm)
-    if imm[0] == "$":
-        try:
-            imm = float("".join(imm[1:]))
-            if type(imm) == float:
-                return True
-        except ValueError:
-            print("Invalid immediate.")
-            return False
+            exit()
     return False
 
 
@@ -322,8 +332,6 @@ def lenChecker(line: str):
         if cmd == "mov" and immediateValidity(line[2]):
             return True
         elif cmd == "mov" and regValidity(line[2]):
-            return True
-        elif cmd == "movf" and regValidity(line[2]):
             return True
         elif opcode[cmd][1] == "A" and len(line) == 4:
             return True
@@ -375,11 +383,11 @@ def isLineValid(line: str):
                     return True
                 elif regValidity(line[2]):
                     return True
-                elif line[2] == "FLAGS":
-                    return True
                 else:
                     return False
-            elif line[1] == "FLAGS":
+            elif line[1] == "FLAGS" and regValidity(line[2]):
+                return True
+            elif line[2] == "FLAGS":
                 print("Illegal use of FLAGS register. Command: " + " ".join(line))
                 exit()
             else:
@@ -426,90 +434,92 @@ i. hlt not being used as the last instruction DONE
 """
 
 flagVarOver = 0
+
+lines = []
 while True:
     try:
-        if lineCount <= 256:
-            cmd = input()
-            if cmd.split()[0] == "var":
-                if len(cmd.split()) == 2:
-                    if flagVarOver:
-                        print(
-                            "Error: Variables found after the beginning at line "
-                            + str(lineCount + 1)
-                            + ": "
-                            + cmd
-                        )
-                        exit()
-                    else:
-                        var = cmd.split()[1]
-                        if duplicateVar(var):
-                            print(
-                                f"Error: Duplicate variable on line {lineCount+1}: {cmd}"
-                            )
-                            exit()
-                        else:
-                            if varNameValidity(var):
-                                variables.append(var)
-                                lineCount += 1
-                                continue
-                            else:
-                                exit()
-                else:
-                    print(
-                        "General Syntax Error on line "
-                        + str(lineCount + 1)
-                        + ": "
-                        + cmd
-                    )
-                    exit()
-            else:
-                flagVarOver = 1
-            if ":" in cmd:
-                cmd1 = cmd.split(":")[1].strip()
-                if labelValidity(cmd.split(":")[0]):
-                    if isValidCmd(cmd1):
-                        if isLineValid(cmd1):
-                            labels[cmd.split(":")[0]] = lineCount - len(variables)
-                            lines.append(cmd1)
-                            lineCount += 1
-                        else:
-                            print(f"General Syntax Error on line {lineCount+1}: {cmd}")
-                            exit()
-                    else:
-                        print(f"General Syntax Error on line {lineCount+1}: {cmd}")
-                        exit()
-                else:
-                    print("Invalid label on line:", lineCount, cmd.split(":")[0])
-                    exit()
-            elif isValidCmd(cmd):
-                if isLineValid(cmd):
-                    lines.append(cmd)
-                    lineCount += 1
-                else:
-                    print(f"General Syntax Error on line {lineCount+1}: {cmd}")
-                    exit()
-            else:
-                print(
-                    "Error: Invalid Command on line " + str(lineCount + 1) + ": " + cmd
-                )
-                exit()
-        else:
-            print("Error: Too many lines")
-            exit()
+        cmd = input()
+        if len(cmd.split()) == 0:
+            continue
+        lines.append(cmd)
     except EOFError:
         break
 
-# hlt checks --------
-if "hlt" in lines:
-    if lines[-1] != "hlt":
-        print("Error: hlt not being used as the last instruction")
-        exit()
-else:
-    print("Error: Missing hlt instruction")
+if len(lines) > 256:
+    print("Lines exceed 256")
     exit()
 
-for key in labels.keys():
-    labels[key] = make_8_bit(labels[key] - len(variables))
+for i in range(len(lines)):
+    cmd = lines[i]
+    if cmd.split()[0] == "var":
+        if len(cmd.split()) == 2:
+            if flagVarOver:
+                print("Error: Variables found after the beginning")
+                exit()
+            else:
+                var = cmd.split()[1]
+                if duplicateVar(var):
+                    print(f"Error: Duplicate variable name: {var}")
+                    exit()
+                else:
+                    if varNameValidity(var):
+                        variables.append(var)
+                        continue
+                    else:
+                        exit()
+        else:
+            print("General Syntax Error: " + cmd)
+            exit()
+    else:
+        flagVarOver = 1
+    if cmd.split()[0][-1] == ":":
+        if not labelValidity(cmd.split()[0][:-1]):
+            print(f"Error: Illegal label name: {cmd.split()[0][:-1]}")
+            exit()
+        else:
+            labels[cmd.split()[0][:-1]] = i - len(variables)
+            continue
 
-for line in lines:
-    printbin(line.split())
+commands = []
+
+for cmd in lines[len(variables) :]:
+    if ":" in cmd:
+        cmd1 = cmd.split(":")[1].strip()
+        if isValidCmd(cmd1):
+            if isLineValid(cmd1):
+                commands.append(cmd1)
+            else:
+                print(f"General Syntax Error on line {lineCount+1}: {cmd}")
+                exit()
+        else:
+            print(f"General Syntax Error on line {lineCount+1}: {cmd}")
+            exit()
+    elif isValidCmd(cmd):
+        if isLineValid(cmd):
+            commands.append(cmd)
+        else:
+            print(f"General Syntax Error on line {lineCount+1}: {cmd}")
+            exit()
+    else:
+        print("Error: Invalid Command on line " + str(lineCount + 1) + ": " + cmd)
+        exit()
+
+# hlt checks --------
+hltCount = 0
+for c in commands:
+    if c == "hlt":
+        hltCount += 1
+
+if hltCount > 1:
+    print("Error: More than one hlt instruction found")
+    exit()
+elif hltCount == 0:
+    print("Error: No hlt instruction found")
+    exit()
+else:
+    for key in labels.keys():
+        labels[key] = make_8_bit(labels[key])
+
+    for cc in commands:
+        printbin(cc.split())
+    exit()
