@@ -6,6 +6,8 @@ x_coord = []
 y_coord = []
 temp = []
 
+from motherConvertor import binaryToInteger, integerToBinary
+
 R = {
     "000": 0,
     "001": 0,
