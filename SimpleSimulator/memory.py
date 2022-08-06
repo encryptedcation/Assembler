@@ -46,7 +46,7 @@ def movImm(reg1, imm):  # assuming immediate is already a decimal here
 
 
 def movReg(reg1, reg2):
-    R[reg1] = R[reg2]
+    R[reg2] = R[reg1]
     resetFlag()
 
 
