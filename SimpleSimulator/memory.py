@@ -306,8 +306,15 @@ while hltFlag != 1:
             sub(reg1, reg2, reg3)
             PC += 1
 
+        elif opcode == "00000":
+            addf(reg1, reg2, reg3)
+
+        elif opcode == "00001":
+            subf(reg1, reg2, reg3)
+
     elif opcodeType == "B":
         reg1 = line[5:8]
+        imm1 = line[8:]
         imm = binaryToInteger(line[8:])  # make function to convert binary to integer
 
         if opcode == "10010":
@@ -321,6 +328,9 @@ while hltFlag != 1:
         elif opcode == "11000":
             rShift(reg1, imm)
             PC += 1
+
+        elif opcode == "10111":
+            movf(reg1, imm1)
 
     elif opcodeType == "C":
         reg1 = line[10:13]
