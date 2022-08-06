@@ -136,14 +136,14 @@ def compare(r1, r2):
 
 
 def load(r1, mem):
-    if mem not in memAddr.keys():
-        memAddr[mem] = 0
-    R[r1] = memAddr[mem]
+    R[r1] = memFile.getValueAtAdd(mem)
+    PC += 1
     resetFlag()
 
 
 def store(r1, mem):
-    memAddr[mem] = R[r1]
+    memFile.loadValueAtAdd(mem, R[r1])
+    PC += 1
     resetFlag()
 
 
