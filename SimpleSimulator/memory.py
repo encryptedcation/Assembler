@@ -18,7 +18,7 @@ R = {
 }
 
 
-opcode = {
+opc = {
     "10000": "A",
     "10001": "A",
     "10010": "B", 
@@ -64,7 +64,7 @@ def memDump():
     pass
 
 def findOpcodeType(op_bin): # takes the opcode in binary
-    return opcode[op_bin]
+    return opc[op_bin]
 
 def movImm(reg1, imm):  # assuming immediate is already a decimal here
     R[reg1] = imm
