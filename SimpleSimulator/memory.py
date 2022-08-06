@@ -2,6 +2,7 @@ from matplotlib import pyplot as plt
 import sys
 
 PC = 0
+Cycle = 0
 Cycle = -1
 x_coord = []
 y_coord = []
@@ -175,7 +176,10 @@ def jlt(line):
 lines = []
 
 while hltFlag != 1:
+    Cycle += 1
     line = memFile.getInst(PC)
+    x_coord.append(Cycle)
+    y_coord.append(PC)
     opcode = line[0:5]
     opcodeType = findOpcodeType(opcode)
 
@@ -279,10 +283,10 @@ while hltFlag != 1:
         hltFlag = 1
         break
 
-    print(integerToBinary(str(PC)), end=" ")
+    print(integerToBinary(int(PC), 8), end=" ")
     for reg in R:
-        print(integerToBinary(str(R[reg])), end=" ")
-    print(integerToBinary(str(R["111"])))
+        print(integerToBinary(int(R[reg]), 16), end=" ")
+    print()
 
 
 memFile.dump()
