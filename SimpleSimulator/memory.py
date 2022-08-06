@@ -156,19 +156,15 @@ def compare(r1, r2):
 
 
 def load(r1, mem):
-    R[r1] = memFile.getValueAtAdd(mem)
+    R[r1] = binaryToInteger(memFile.mem[binaryToInteger(mem)])
     resetFlag()
     dump()
-    global PC
-    PC += 1
 
 
 def store(r1, mem):
-    memFile.loadValueAtAdd(mem, R[r1])
+    memFile.mem[binaryToInteger(mem)] = integerToBinary(R[r1], 16)
     resetFlag()
     dump()
-    global PC
-    PC += 1
 
 
 def jmp(mem):
