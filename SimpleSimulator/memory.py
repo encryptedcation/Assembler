@@ -279,6 +279,12 @@ while hltFlag != 1:
         hltFlag = 1
         break
 
+    print(integerToBinary(str(PC)), end=" ")
+    for reg in R:
+        print(integerToBinary(str(R[reg])), end=" ")
+    print(integerToBinary(str(R["111"])))
+
+
 memFile.dump()
 
 
