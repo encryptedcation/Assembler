@@ -329,12 +329,15 @@ def isLineValid(line: str):
                 elif regValidity(line[2]):
                     return True
                 elif line[2] == "FLAGS":
-                    return True
+                    print("Illegal use of FLAGS register. Command: " + " ".join(line))
+                    exit()
                 else:
                     return False
             elif line[1] == "FLAGS":
-                print("Illegal use of FLAGS register. Command: " + " ".join(line))
-                exit()
+                if regValidity(line[2]):
+                    return True
+                else:
+                    return False
             else:
                 return False
         if "FLAGS" in line:
