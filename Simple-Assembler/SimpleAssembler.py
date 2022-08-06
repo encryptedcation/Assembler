@@ -1,46 +1,6 @@
-opcode = {
-    "add": ("10000", "A"),
-    "sub": ("10001", "A"),
-    "mov": [("10010", "B"), ("10011", "C")],
-    "ld": ("10100", "D"),
-    "st": ("10101", "D"),
-    "mul": ("10110", "A"),
-    "div": ("10111", "C"),
-    "rs": ("11000", "B"),
-    "ls": ("11001", "B"),
-    "xor": ("11010", "A"),
-    "or": ("11011", "A"),
-    "and": ("11100", "A"),
-    "not": ("11101", "C"),
-    "cmp": ("11110", "C"),
-    "jmp": ("11111", "E"),
-    "jlt": ("01100", "E"),
-    "jgt": ("01101", "E"),
-    "je": ("01111", "E"),
-    "hlt": ("01010", "F"),
-}
+from params import *
 
-registers = {
-    "R0": "000",
-    "R1": "001",
-    "R2": "010",
-    "R3": "011",
-    "R4": "100",
-    "R5": "101",
-    "R6": "110",
-}
-
-registersF = {
-    "R0": "000",
-    "R1": "001",
-    "R2": "010",
-    "R3": "011",
-    "R4": "100",
-    "R5": "101",
-    "R6": "110",
-    "FLAGS": "111",
-}
-
+from errors import *
 
 lineCount = 0  # Counting number of lines entered till now
 lines = []
@@ -328,16 +288,13 @@ def isLineValid(line: str):
                     return True
                 elif regValidity(line[2]):
                     return True
-                elif line[2] == "FLAGS":
-                    print("Illegal use of FLAGS register. Command: " + " ".join(line))
-                    exit()
                 else:
                     return False
-            elif line[1] == "FLAGS":
-                if regValidity(line[2]):
-                    return True
-                else:
-                    return False
+            elif line[1] == "FLAGS" and regValidity(line[2]):
+                return True
+            elif line[2] == "FLAGS":
+                print("Illegal use of FLAGS register. Command: " + " ".join(line))
+                exit()
             else:
                 return False
         if "FLAGS" in line:
@@ -456,12 +413,15 @@ while True:
         break
 
 # hlt checks --------
-if "hlt" in lines:
-    if lines[-1] != "hlt":
-        print("Error: hlt not being used as the last instruction")
-        exit()
-else:
-    print("Error: Missing hlt instruction")
+hltCount = 0
+for line in lines:
+    if line == "hlt":
+        hltCount += 1
+if hltCount == 0:
+    # print("Error: No hlt instruction found")
+    exit()
+if hltCount > 1:
+    print("Error: More than one hlt instruction found")
     exit()
 
 for key in labels.keys():
