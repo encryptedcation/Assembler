@@ -99,10 +99,11 @@ def mul(r1, r2, r3):
         dump()
 
 
-def divide(r1, r2, r3):
-    R[r1] = int(R[r2] / R[r3])
+def divide(r1, r2):
+    R["000"] = int(R[r1] / R[r2])
+    R["001"] = int(R[r1] % R[r2])
     if R[r1] < 0:
-        R[r1] = 0  # case of underflow
+        R["000"] = 0  # case of underflow
         R["111"] = 8  # Raise OVERFLOW flag
         dump()
     else:
@@ -265,7 +266,11 @@ def dump():
 
 lines = []
 
+count = 0
 while hltFlag != 1:
+    count += 1
+    if count > 100000:
+        break
     Cycle += 1
     line = memFile.getInst(PC)
     x_coord.append(Cycle)
@@ -274,9 +279,9 @@ while hltFlag != 1:
     opcodeType = findOpcodeType(opcode)
 
     if opcodeType == "A":
-        reg1 = line[7:10]
-        reg2 = line[10:13]
-        reg3 = line[13:]
+        reg1 = line[7:10].strip()
+        reg2 = line[10:13].strip()
+        reg3 = line[13:].strip()
 
         if opcode == "10000":
             add(reg1, reg2, reg3)
@@ -313,9 +318,9 @@ while hltFlag != 1:
             subf(reg1, reg2, reg3)
 
     elif opcodeType == "B":
-        reg1 = line[5:8]
-        imm1 = line[8:]
-        imm = binaryToInteger(line[8:])  # make function to convert binary to integer
+        reg1 = line[5:8].strip()
+        imm1 = line[8:].strip()
+        imm = binaryToInteger(line[8:].strip())
 
         if opcode == "10010":
             movImm(reg1, imm)
@@ -333,8 +338,8 @@ while hltFlag != 1:
             movf(reg1, imm1)
 
     elif opcodeType == "C":
-        reg1 = line[10:13]
-        reg2 = line[13:]
+        reg1 = line[10:13].strip()
+        reg2 = line[13:].strip()
 
         if opcode == "10011":
             movReg(reg1, reg2)
@@ -353,8 +358,8 @@ while hltFlag != 1:
             PC += 1
 
     elif opcodeType == "D":
-        reg1 = line[5:8]
-        memAddr = line[8:]
+        reg1 = line[5:8].strip()
+        memAddr = line[8:].strip()
 
         if opcode == "10100":
             load(reg1, memAddr)
@@ -365,7 +370,7 @@ while hltFlag != 1:
             PC += 1
 
     elif opcodeType == "E":
-        memAddr = line[8:]
+        memAddr = line[8:].strip()
 
         if opcode == "11111":
             jmp(memAddr)
@@ -388,16 +393,16 @@ while hltFlag != 1:
 memFile.dump()
 
 
-def plot():
-    plt.style.use("seaborn")
-    plt.scatter(
-        x_coord, y_coord, cmap="summer", edgecolor="black", linewidth=1, alpha=0.75
-    )
-    plt.title("Memory accessed Vs Cycles")
-    plt.xlabel("Cycle number")
-    plt.ylabel("Memory address")
-    plt.tight_layout()
-    plt.show()
+# def plot():
+#     plt.style.use("seaborn")
+#     plt.scatter(
+#         x_coord, y_coord, cmap="summer", edgecolor="black", linewidth=1, alpha=0.75
+#     )
+#     plt.title("Memory accessed Vs Cycles")
+#     plt.xlabel("Cycle number")
+#     plt.ylabel("Memory address")
+#     plt.tight_layout()
+#     plt.show()
 
 
-plot()
+# plot()
