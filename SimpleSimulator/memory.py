@@ -393,16 +393,16 @@ while hltFlag != 1:
 memFile.dump()
 
 
-# def plot():
-#     plt.style.use("seaborn")
-#     plt.scatter(
-#         x_coord, y_coord, cmap="summer", edgecolor="black", linewidth=1, alpha=0.75
-#     )
-#     plt.title("Memory accessed Vs Cycles")
-#     plt.xlabel("Cycle number")
-#     plt.ylabel("Memory address")
-#     plt.tight_layout()
-#     plt.show()
+"""def plot():
+   plt.style.use("seaborn")
+    plt.scatter(
+        x_coord, y_coord, cmap="summer", edgecolor="black", linewidth=1, alpha=0.75
+    )
+    plt.title("Memory accessed Vs Cycles")
+    plt.xlabel("Cycle number")
+    plt.ylabel("Memory address")
+    plt.tight_layout()
+    plt.show()
 
 
-# plot()
+plot()"""
