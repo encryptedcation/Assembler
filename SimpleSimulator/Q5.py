@@ -96,7 +96,6 @@ print(num_of_bit_newAddrs - num_of_bits_addrs)
 new_cpu_bits = int(input("Enter number of bits in cpu: "))
 add_pins = int(input("Enter number of address pins: "))
 type_of_addr = input("Enter type of addressable memory: ")
-s
 # output is in bytes
 if type_of_addr == "Bit":
     mem_size = 2 ** (add_pins) / 8
